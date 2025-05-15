@@ -1,0 +1,2 @@
+# production_training
+2025年1月～5月Java+Pythonプログラマー養成科における制作実習のリポジトリ
