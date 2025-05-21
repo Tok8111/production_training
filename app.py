@@ -76,17 +76,20 @@ def logout():
 # 以下、仮ルート（今後実装予定）
 # ---------------------------
 
+# 【仮】日報カレンダー（未実装）
 @app.route('/daily_report_input', methods=['GET', 'POST'])
 def daily_report_input():
-    return "【仮】日報入力（未実装）"
+    return render_template('daily_report_input.html')
 
+# 【仮】日報一覧（未実装）
 @app.route('/report_list', methods=['GET', 'POST'])
-def report_history():
-    return "【仮】日報一覧（未実装）"
+def report_list():
+    return render_template('report_list.html')
 
+# 【仮】利用者一覧（未実装）
 @app.route('/user_list', methods=['GET', 'POST'])
 def user_list():
-    return "【仮】利用者一覧（未実装）"
+    return render_template('user_list.html')
 
 # ---------------------------
 # アプリ起動
