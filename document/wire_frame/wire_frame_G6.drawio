@@ -1,0 +1,28 @@
+<mxfile host="65bd71144e">
+    <diagram id="YqekUkOiaco4jpb7PbY4" name="G6.ログアウト画面">
+        <mxGraphModel dx="1092" dy="710" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="x9271L4vOtv5JkQgOsGB-1" value="【業務日報アプリ】ワイヤーフレーム" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" parent="1" vertex="1">
+                    <mxGeometry width="230" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1RilgK_zG18_VcxskLw-1" value="G6．ログアウト画面" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="135" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1RilgK_zG18_VcxskLw-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="80" width="230" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1RilgK_zG18_VcxskLw-3" value="業務日報アプリ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="102.5" y="80" width="125" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1RilgK_zG18_VcxskLw-4" value="ログアウトしました。&lt;div&gt;おつかれさまでした。&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=0" parent="1" vertex="1">
+                    <mxGeometry x="60" y="110" width="210" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="a1RilgK_zG18_VcxskLw-5" value="トップへ" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="125" y="160" width="80" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,40 @@
+<mxfile host="65bd71144e">
+    <diagram id="Nra24Tc0O6RAhro0r5n7" name="G1.トップ画面">
+        <mxGraphModel dx="1092" dy="710" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="【業務日報アプリ】ワイヤーフレーム" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" parent="1" vertex="1">
+                    <mxGeometry width="230" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="80" width="230" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="G1．トップ画面" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="業務日報アプリ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="107.5" y="80" width="125" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="ログイン画面" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="107.5" y="110" width="125" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="ユーザーID" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="70" y="150" width="95" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="パスワード" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="70" y="180" width="95" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="155" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="185" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="ログイン" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="130" y="220" width="80" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
