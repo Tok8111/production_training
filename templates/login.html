@@ -9,7 +9,7 @@
     {% if error %}
         <p style="color: red;">{{ error }}</p>
     {% endif %}
-    <form method="post">
+    <form method="post" action="{{ url_for('login') }}">
         <label for="username">ユーザーID：</label>
         <input type="text" name="username" required><br><br>
 

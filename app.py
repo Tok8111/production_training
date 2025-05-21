@@ -32,28 +32,32 @@ def index():
 # ---------------------------
 # ログイン処理
 # ---------------------------
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+        user = cursor.fetchone()
+
+        if user:
+            session['user_id'] = user['user_id']
+            session['username'] = user['username']
+            return redirect(url_for('main'))
+        else:
+            error = 'ユーザー名またはパスワードが間違っています。'
+            return render_template('login.html', error=error)
     
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
-    user = cursor.fetchone()
-    
-    if user:
-        session['user_id'] = user['user_id']
-        session['username'] = user['username']
-        return redirect(url_for('main'))
-    else:
-        error = 'ユーザー名またはパスワードが間違っています。'
-        return render_template('login.html', error=error)
+    # GETリクエスト時のフォーム表示
+    return render_template('login.html')
 
 # ---------------------------
 # メイン画面
 # ---------------------------
-@app.route('/main')
+@app.route('/main', methods=['GET', 'POST'])
 def main():
     if 'username' in session:
         return render_template('main.html', username=session['username'])
@@ -63,7 +67,7 @@ def main():
 # ---------------------------
 # ログアウト処理
 # ---------------------------
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.clear()
     return redirect(url_for('index'))
@@ -72,25 +76,17 @@ def logout():
 # 以下、仮ルート（今後実装予定）
 # ---------------------------
 
-@app.route('/daily_report_input')
+@app.route('/daily_report_input', methods=['GET', 'POST'])
 def daily_report_input():
-    return "【仮】日報入力画面（未実装）"
+    return "【仮】日報入力（未実装）"
 
-@app.route('/report_history')
+@app.route('/report_list', methods=['GET', 'POST'])
 def report_history():
-    return "【仮】過去の日報一覧（未実装）"
+    return "【仮】日報一覧（未実装）"
 
-@app.route('/report_detail/<int:report_id>')
-def report_detail(report_id):
-    return f"【仮】日報詳細表示（ID: {report_id}）（未実装）"
-
-@app.route('/export_csv')
-def export_csv():
-    return "【仮】CSV出力（未実装）"
-
-@app.route('/user_settings')
-def user_settings():
-    return "【仮】ユーザー設定画面（未実装）"
+@app.route('/user_list', methods=['GET', 'POST'])
+def user_list():
+    return "【仮】利用者一覧（未実装）"
 
 # ---------------------------
 # アプリ起動
