@@ -48,8 +48,7 @@ def login():
             session['username'] = user['username']
             return redirect(url_for('main'))
         else:
-            error = 'ユーザー名またはパスワードが間違っています。'
-            return render_template('login.html', error=error)
+            return redirect(url_for('login_failure'))
     
     # GETリクエスト時のフォーム表示
     return render_template('login.html')
@@ -65,12 +64,19 @@ def main():
         return redirect(url_for('index'))
 
 # ---------------------------
-# ログアウト処理
+# ログイン失敗処理（ログイン失敗画面へ遷移）
+# ---------------------------
+@app.route('/login_failure')
+def login_failure():
+    return render_template('login_failure.html')
+
+# ---------------------------
+# ログアウト処理（ログアウト画面へ遷移）
 # ---------------------------
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return render_template('logout.html')
 
 # ---------------------------
 # 以下、仮ルート（今後実装予定）
