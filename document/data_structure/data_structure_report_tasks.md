@@ -1,3 +1,4 @@
+### 日報データの中間テーブル【report_tasksテーブル】 
 | 項目名 | 型 | 説明 | 制約 |
 |-|-|-|-|
 | task_id | INTEGER | 日報ID(各作業を一意に識別) | 主キー(PRIMARY KEY) |

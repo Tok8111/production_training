@@ -1,3 +1,4 @@
+### 日報データ構造【reportsテーブル】 
 | 項目名 | 型 | 説明 | 制約 |
 |-|-|-|-|
 | report_id | INTEGER | 日報ID(各日報を一意に識別) | 主キー(PRIMARY KEY) |
