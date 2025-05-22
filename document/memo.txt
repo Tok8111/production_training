@@ -1,0 +1,13 @@
+＜全体の設計案＞
+production_training.xlsx：全体設計案をメモとしてまとめたファイル
+requirements.md　　　　 ：要件定義書
+
+＜データベースの設計案＞
+class_diagram　：クラス図
+er_diagram　　 ：ER図
+data_strucuture：データ構造
+
+＜画面の設計案＞
+display_draft　　　　　　：
+screen_transition_diagram：画面遷移図
+wire_frame　　　　　　　 ：ワイヤーフレーム
