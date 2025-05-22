@@ -1,45 +1,42 @@
 import sqlite3
+from datetime import datetime
 
-conn = sqlite3.connect('your_database.db')  # 実際のDBファイル名に置き換えてください
-cursor = conn.cursor()
+def init_db():
+    conn = sqlite3.connect('your_database.db')  # DBファイル名に適宜変更
+    cursor = conn.cursor()
 
-# usersテーブル作成
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL
-)
-''')
+    # 既存の users テーブルを削除（初期化のため）
+    cursor.execute('DROP TABLE IF EXISTS users')
 
-# # テストユーザー追加
-# cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ('testuser', 'testpass'))
+    # users テーブル再作成
+    cursor.execute('''
+        CREATE TABLE users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL,
+            created_at TEXT
+        )
+    ''')
 
-# conn.commit()
-# conn.close()
+    now = datetime.now().isoformat()
 
-# print("テストユーザーを追加しました。")
+    # 仮の利用者アカウント
+    cursor.execute('''
+        INSERT INTO users (username, password, name, role, created_at)
+        VALUES (?, ?, ?, ?, ?)
+    ''', ('test_user', 'pass123', 'テスト利用者', 'user', now))
 
-# reports テーブル作成（存在しない場合）
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS reports (
-    report_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    report_date DATE NOT NULL,
-    condition TEXT NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    work_time INTEGER NOT NULL,
-    work_detail TEXT NOT NULL,
-    user_comment TEXT,
-    staff_comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-)
-''')
+    # 仮の職員アカウント
+    cursor.execute('''
+        INSERT INTO users (username, password, name, role, created_at)
+        VALUES (?, ?, ?, ?, ?)
+    ''', ('staff_user', 'pass123', 'テスト職員', 'staff', now))
 
-conn.commit()
-conn.close()
+    conn.commit()
+    conn.close()
+    print("usersテーブルを再作成しました")
 
-print("テーブル 'reports' を作成しました。")
+if __name__ == '__main__':
+    init_db()

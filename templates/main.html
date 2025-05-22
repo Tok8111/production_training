@@ -11,41 +11,84 @@
         h2 {
             margin-bottom: 30px;
         }
-        .button-container {
-            display: grid;
-            grid-template-columns: repeat(2, 200px);
-            gap: 20px;
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        .nav-button {
-            padding: 15px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
+        th, td {
+            border: 1px solid #aaa;
+            width: 40px;
+            height: 40px;
+            text-align: center;
         }
-        .nav-button:hover {
-            background-color: #45a049;
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+        a:hover {
+            color: #007bff;
         }
     </style>
 </head>
+
 <body>
     <h2>{{ username }}さん、こんにちは。</h2>
 
-    <div class="button-container">
-        <form action="{{ url_for('daily_report_input') }}">
+    <div class="button-container"></div>
+
+        {% if role == 'user' %}
+            <p>あなたは「利用者」としてログインしています。</p>
+            <h3>{{ current_month }}のカレンダー</h3>
+            <table>
+                <tr>
+                    {% for day in weekdays %}
+                        <th>{{ day }}</th>
+                    {% endfor %}
+                </tr>
+                {% for week in calendar %}
+                <tr>
+                    {% for day in week %}
+                    <td>
+                        {% if day.month == day.today().month %}
+                            <a href="{{ url_for('daily_report_input') }}?date={{ day }}">{{ day.day }}</a>
+                        {% else %}
+                            <!-- 前後月は非表示 -->
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+       
+        {% elif role == 'staff' %}
+            <p>あなたは「職員」としてログインしています。</p>
+            <form action="{{ url_for('user_list') }}">
+                <button class="nav-button">利用者一覧</button>
+            </form>
+
+        {% else %}
+            <p>権限情報が見つかりません。</p>
+        
+        {% endif %}
+
+
+        <!-- <form action="{{ url_for('daily_report_input') }}">
             <button class="nav-button">日報入力</button>
         </form>
+
         <form action="{{ url_for('report_list') }}">
             <button class="nav-button">日報一覧</button>
         </form>
+        
         <form action="{{ url_for('user_list') }}">
             <button class="nav-button">利用者一覧</button>
         </form>
+        
         <form action="{{ url_for('logout') }}">
             <button class="nav-button">ログアウト</button>
-        </form>
+        </form> -->
+
     </div>
+
 </body>
 </html>

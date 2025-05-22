@@ -1,4 +1,5 @@
 import sqlite3
+import calendar
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from datetime import datetime
 
@@ -45,8 +46,9 @@ def login():
         user = cursor.fetchone()
 
         if user:
-            session['user_id'] = user['user_id']
-            session['username'] = user['username']
+            session['user_id'] = user['user_id'] # ユーザIDをセッションに保存
+            session['username'] = user['username']  # ユーザネームをセッションに保存
+            session['role'] = user['role']  # ユーザロールをセッションに保存
             return redirect(url_for('main'))
         else:
             return redirect(url_for('login_failure'))
@@ -64,10 +66,18 @@ def login_failure():
 # ---------------------------
 # G3.メイン画面
 # ---------------------------
-@app.route('/main', methods=['GET', 'POST'])
+@app.route('/main', methods=['GET'])
 def main():
-    if 'username' in session:
-        return render_template('main.html', username=session['username'])
+    if 'username' in session and 'role' in session:
+        role = session['role']
+        username = session['username']
+
+        weekdays = ['日', '月', '火', '水', '木', '金', '土']
+        today = datetime.today()
+        cal = calendar.Calendar(firstweekday=6)  # 日曜始まり
+        month_days = cal.monthdatescalendar(today.year, today.month)
+
+        return render_template('main.html', username=username, role=role, calendar=month_days, weekdays=weekdays, current_month=today.strftime("%Y年%m月"))
     else:
         return redirect(url_for('index'))
 
