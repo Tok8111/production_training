@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
     <title>日報入力画面</title>
 </head>
+
 <body>
     <h1>日報入力画面ページ（仮）</h1>
     <p>このページは後で正式に作成される予定です。</p>
+    <form method="POST">
+        <input type="date" name="date" required>
+        <select name="work_type">
+            <option value="業務A">業務A</option>
+            <option value="業務B">業務B</option>
+        </select>
+        <input type="time" name="start_time" required>
+        <input type="time" name="end_time" required>
+        <textarea name="content"></textarea>
+        <button type="submit">登録</button>
+    </form>
 </body>
+
 </html>

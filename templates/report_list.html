@@ -1,11 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
     <title>業務日報一覧</title>
 </head>
+
 <body>
     <h1>業務日報一覧ページ（仮）</h1>
     <p>このページは後で正式に作成される予定です。</p>
+
+    <table>
+        <tr>
+            <th>日付</th>
+            <th>業務区分</th>
+            <th>開始</th>
+            <th>終了</th>
+            <th>内容</th>
+        </tr>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report['report_date'] }}</td>
+            <td>{{ report['work_detail'] }}</td>
+            <td>{{ report['start_time'] }}</td>
+            <td>{{ report['end_time'] }}</td>
+            <td>{{ report['user_comment'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
 </body>
+
 </html>

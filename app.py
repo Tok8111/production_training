@@ -1,5 +1,6 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, session, g
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -23,7 +24,7 @@ def close_connection(exception):
         db.close()
 
 # ---------------------------
-# トップページ（ログイン画面）
+# G1.トップページ（ログイン画面）
 # ---------------------------
 @app.route('/')
 def index():
@@ -54,7 +55,14 @@ def login():
     return render_template('login.html')
 
 # ---------------------------
-# メイン画面
+# G2.ログイン失敗処理（ログイン失敗画面へ遷移）
+# ---------------------------
+@app.route('/login_failure')
+def login_failure():
+    return render_template('login_failure.html')
+
+# ---------------------------
+# G3.メイン画面
 # ---------------------------
 @app.route('/main', methods=['GET', 'POST'])
 def main():
@@ -63,15 +71,64 @@ def main():
     else:
         return redirect(url_for('index'))
 
-# ---------------------------
-# ログイン失敗処理（ログイン失敗画面へ遷移）
-# ---------------------------
-@app.route('/login_failure')
-def login_failure():
-    return render_template('login_failure.html')
+# -----------------------
+# G4. 日報入力画面のルート
+# -----------------------
+@app.route('/daily_report_input', methods=['GET', 'POST'])
+def daily_report_input():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        date = request.form['date']
+        work_type = request.form['work_type']
+        start_time = request.form['start_time']
+        end_time = request.form['end_time']
+        content = request.form['content']
+        username = session['username']
+        created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO reports (username, date, work_type, start_time, end_time, content, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (username, date, work_type, start_time, end_time, content, created_at))
+        conn.commit()
+        conn.close()
+        flash('日報を登録しました。')
+        return redirect(url_for('report_list'))
+
+    return render_template('daily_report_input.html', username=session['username'])
+
+# -----------------------
+# G5. 日報一覧画面のルート
+# -----------------------
+@app.route('/report_list', methods=['GET', 'POST'])
+def report_list():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        SELECT reports.*, users.username 
+        FROM reports
+        JOIN users ON reports.user_id = users.user_id
+        WHERE users.username = ?
+        ORDER BY reports.report_date DESC
+    ''', (username,))
+
+    # cursor.execute('SELECT * FROM reports WHERE username = ? ORDER BY date DESC', (username,))
+
+    reports = cursor.fetchall()
+    conn.close()
+    return render_template('report_list.html', reports=reports, username=username)
 
 # ---------------------------
-# ログアウト処理（ログアウト画面へ遷移）
+# G6.ログアウト処理（ログアウト画面へ遷移）
 # ---------------------------
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -91,16 +148,6 @@ def calender():
 @app.route('/user_list', methods=['GET', 'POST'])
 def user_list():
     return render_template('user_list.html')
-
-# 【仮】日報入力画面（未実装）
-@app.route('/daily_report_input', methods=['GET', 'POST'])
-def daily_report_input():
-    return render_template('daily_report_input.html')
-
-# 【仮】日報一覧画面（未実装）
-@app.route('/report_list', methods=['GET', 'POST'])
-def report_list():
-    return render_template('report_list.html')
 
 # ---------------------------
 # アプリ起動
