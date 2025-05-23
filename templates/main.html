@@ -34,59 +34,75 @@
 <body>
     <h2>{{ username }}さん、こんにちは。</h2>
 
-    <div class="button-container"></div>
+    {% if role == 'user' %}
+        <p>あなたは「利用者」としてログインしています。</p>
 
-        {% if role == 'user' %}
-            <p>あなたは「利用者」としてログインしています。</p>
-            <h3>{{ current_month }}のカレンダー</h3>
-            <table>
-                <tr>
-                    {% for day in weekdays %}
-                        <th>{{ day }}</th>
+        <!-- カレンダー表示 -->
+        <div>
+            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <a href="{{ url_for('main') }}?year={{ prev_year }}&month={{ prev_month }}" style="margin-right:20px;">&#8592;</a>
+                <h3>{{ year }}年 {{ month }}月</h3>
+                <a href="{{ url_for('main') }}?year={{ next_year }}&month={{ next_month }}" style="margin-left:20px;">&#8594;</a>
+            </div>
+
+            <table border="1" style="border-collapse: collapse; margin: auto;">
+                <thead>
+                    <tr>
+                        <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in calendar %}
+                    <tr>
+                        {% for day in week %}
+                        <td style="width:40px; height:40px; text-align:center; vertical-align:middle;">
+                            {% if day != 0 %}
+                                <a href="{{ url_for('daily_report_input') }}?date={{ year }}-{{ '%02d' % month }}-{{ '%02d' % day }}">{{ day }}</a>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% elif role == 'staff' %}
+        <p>あなたは「職員」としてログインしています。</p>
+
+        <h3>利用者一覧</h3>
+        <table border="1" style="border-collapse: collapse; margin-top: 10px; width: 100%;">
+            <thead>
+                <tr>
+                    <th>名前</th>
                 </tr>
-                {% for week in calendar %}
+            </thead>
+
+            <tbody>
+                {% for user in users %}
                 <tr>
-                    {% for day in week %}
                     <td>
-                        {% if day.month == day.today().month %}
-                            <a href="{{ url_for('daily_report_input') }}?date={{ day }}">{{ day.day }}</a>
-                        {% else %}
-                            <!-- 前後月は非表示 -->
-                        {% endif %}
+                        <a href="{{ url_for('report_list') }}?user_id={{ user.id }}">{{ user.name }}</a>
                     </td>
-                    {% endfor %}
                 </tr>
                 {% endfor %}
-            </table>
-       
-        {% elif role == 'staff' %}
-            <p>あなたは「職員」としてログインしています。</p>
-            <form action="{{ url_for('user_list') }}">
-                <button class="nav-button">利用者一覧</button>
-            </form>
+            </tbody>
 
-        {% else %}
-            <p>権限情報が見つかりません。</p>
+        </table>
+  
+    {% else %}
+        <p>権限情報が見つかりません。</p>
         
-        {% endif %}
+    {% endif %}
 
 
-        <!-- <form action="{{ url_for('daily_report_input') }}">
-            <button class="nav-button">日報入力</button>
-        </form>
-
-        <form action="{{ url_for('report_list') }}">
-            <button class="nav-button">日報一覧</button>
-        </form>
-        
-        <form action="{{ url_for('user_list') }}">
-            <button class="nav-button">利用者一覧</button>
-        </form>
+    <div class="button-container"></div>
         
         <form action="{{ url_for('logout') }}">
             <button class="nav-button">ログアウト</button>
-        </form> -->
+        </form>
 
     </div>
 
