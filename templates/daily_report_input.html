@@ -14,7 +14,8 @@
     </style>
 
     <script>
-        let taskCount = 1;
+        // 初期値はサーバーからのtasks数。0件なら1にする。
+        let taskCount = {{ task_count }};
 
         function addTask() {
             if (taskCount >= 3) return;
@@ -56,52 +57,93 @@
 
 <body>
 
-    <h1>{{ date }} の日報入力</h1>
+    <h1>{{ report_date }} の日報入力</h1>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="alert alert-success">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
 
     <form method="POST">
         <label>日付:</label>
-        <input type="text" name="report_date" value="{{ date }}" readonly>
+        <input type="text" name="report_date" value="{{ report_date }}" readonly>
 
         <label>体調:</label>
         <select name="condition">
-            <option value="良好">良好</option>
-            <option value="普通">普通</option>
-            <option value="悪い">悪い</option>
+            <option value="良好" {% if condition == '良好' %}selected{% endif %}>良好</option>
+            <option value="普通" {% if condition == '普通' %}selected{% endif %}>普通</option>
+            <option value="悪い" {% if condition == '悪い' %}selected{% endif %}>悪い</option>
         </select>
 
         <label>出勤時間:</label>
-        <input type="time" name="start_time" required>
+        <input type="time" name="start_time" value="{{ start_time }}" required>
 
         <label>退勤時間:</label>
-        <input type="time" name="end_time" required>
+        <input type="time" name="end_time" value="{{ end_time }}" required>
 
         <hr>
+
         <div id="tasks-container">
-            <div class="task-block" id="task-template">
-                <label>作業内容:</label>
-                <select name="work_detail">
-                    <option value="清掃">清掃</option>
-                    <option value="パソコン設定">パソコン設定</option>
-                    <option value="発送準備・検品">発送準備・検品</option>
-                    <option value="データ入力">データ入力</option>
-                    <option value="資料準備・確認">資料準備・確認</option>
-                    <option value="備品移動">備品移動</option>
-                    <option value="パソコンスキル">パソコンスキル</option>
-                    <option value="タイピング">タイピング</option>
-                    <option value="軽作業">軽作業</option>
-                    <option value="面接対策">面接対策</option>
-                    <option value="応募書類作成">応募書類作成</option>
-                    <option value="その他">その他</option>
-                </select>
+            {% if tasks and tasks|length > 0 %}
+                {% for task in tasks %}
+                    <div class="task-block">
+                        <label>作業内容:</label>
+                        <select name="work_detail[]">
+                            <option value="清掃" {% if task.task_name == '清掃' %}selected{% endif %}>清掃</option>
+                            <option value="パソコン設定" {% if task.task_name == 'パソコン設定' %}selected{% endif %}>パソコン設定</option>
+                            <option value="発送準備・検品" {% if task.task_name == '発送準備・検品' %}selected{% endif %}>発送準備・検品</option>
+                            <option value="データ入力" {% if task.task_name == 'データ入力' %}selected{% endif %}>データ入力</option>
+                            <option value="資料準備・確認" {% if task.task_name == '資料準備・確認' %}selected{% endif %}>資料準備・確認</option>
+                            <option value="備品移動" {% if task.task_name == '備品移動' %}selected{% endif %}>備品移動</option>
+                            <option value="パソコンスキル" {% if task.task_name == 'パソコンスキル' %}selected{% endif %}>パソコンスキル</option>
+                            <option value="タイピング" {% if task.task_name == 'タイピング' %}selected{% endif %}>タイピング</option>
+                            <option value="軽作業" {% if task.task_name == '軽作業' %}selected{% endif %}>軽作業</option>
+                            <option value="面接対策" {% if task.task_name == '面接対策' %}selected{% endif %}>面接対策</option>
+                            <option value="応募書類作成" {% if task.task_name == '応募書類作成' %}selected{% endif %}>応募書類作成</option>
+                            <option value="その他" {% if task.task_name == 'その他' %}selected{% endif %}>その他</option>
+                        </select>
 
-                <label>作業時間(0.25単位):</label>
-                <input type="number" name="work_time" step="0.25" min="0" required>
+                        <label>作業時間(0.25単位):</label>
+                        <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>
 
-                <label>利用者によるコメント:</label>
-                <textarea name="user_detail" maxlength="300"></textarea>
+                        <label>利用者によるコメント:</label>
+                        <textarea name="user_comment[]" maxlength="300">{{ task.task_note }}</textarea>
 
-                <button type="button" class="delete-btn" style="display:none">削除</button>
-            </div>
+                        <button type="button" class="delete-btn" onclick="this.parentElement.remove()">削除</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="task-block" id="task-template">
+                    <label>作業内容:</label>
+                    <select name="work_detail[]">
+                        <option value="清掃">清掃</option>
+                        <option value="パソコン設定">パソコン設定</option>
+                        <option value="発送準備・検品">発送準備・検品</option>
+                        <option value="データ入力">データ入力</option>
+                        <option value="資料準備・確認">資料準備・確認</option>
+                        <option value="備品移動">備品移動</option>
+                        <option value="パソコンスキル">パソコンスキル</option>
+                        <option value="タイピング">タイピング</option>
+                        <option value="軽作業">軽作業</option>
+                        <option value="面接対策">面接対策</option>
+                        <option value="応募書類作成">応募書類作成</option>
+                        <option value="その他">その他</option>
+                    </select>
+
+                    <label>作業時間(0.25単位):</label>
+                    <input type="number" name="work_time[]" step="0.25" min="0" required>
+
+                    <label>利用者によるコメント:</label>
+                    <textarea name="user_comment[]" maxlength="300"></textarea>
+
+                    <button type="button" class="delete-btn" style="display:none">削除</button>
+                </div>
+            {% endif %}
         </div>
 
         <button type="button" id="add-btn" onclick="addTask()">追加</button>

@@ -152,40 +152,83 @@ def main():
 # -----------------------
 @app.route('/daily_report_input', methods=['GET', 'POST'])
 def daily_report_input():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
-    username = session['username']
-
     if request.method == 'POST':
-        date = request.form['date']
-        work_type = request.form['work_type']
-        start_time = request.form['start_time']
-        end_time = request.form['end_time']
-        content = request.form['content']
+        db = get_db()
+        cursor = db.cursor()
+
+        user_id = session['user_id']
+        report_date = request.form['report_date']
+        condition = request.form.get('condition')
+        start_time = request.form.get('start_time')
+        end_time = request.form.get('end_time')
+
+        # 🔹 先に各リスト形式の値を取得
+        task_name = request.form.getlist('work_detail[]')
+        task_duration = request.form.getlist('work_time[]')
+        task_note = request.form.getlist('user_comment[]')
+
+        # 🔹 代表値を使って reports テーブル用の項目を生成
+        work_time = task_duration[0].strip() if task_duration and task_duration[0].strip() != "" else "0"
+        work_detail = task_name[0].strip() if task_name and task_name[0].strip() != "" else "(未記入)"
+
         created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO reports (username, date, work_type, start_time, end_time, content, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (username, date, work_type, start_time, end_time, content, created_at))
-        conn.commit()
-        conn.close()
-        flash('日報を登録しました。')
-        return redirect(url_for('report_list'))
+        # reportsテーブルに既存データがあるか確認
+        cursor.execute('SELECT report_id FROM reports WHERE user_id = ? AND report_date = ?', (user_id, report_date))
+        existing_report = cursor.fetchone()
 
-    # ★ここを追加：GETパラメータから日付取得
-    selected_date = request.args.get('date')
-    if selected_date is None:
-        selected_date = datetime.today().strftime('%Y-%m-%d')
+        if existing_report:
+            report_id = existing_report['report_id']
+            cursor.execute('''
+                UPDATE reports
+                SET condition = ?, start_time = ?, end_time = ?, work_time = ?, work_detail = ?, updated_at = ?
+                WHERE report_id = ?
+            ''', (condition, start_time, end_time, work_time, work_detail, created_at, report_id))
+            # 関連タスクは一旦削除
+            cursor.execute('DELETE FROM report_tasks WHERE report_id = ?', (report_id,))
+        else:
+            cursor.execute('''
+                INSERT INTO reports (user_id, report_date, condition, start_time, end_time, work_time, work_detail, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (user_id, report_date, condition, start_time, end_time, work_time, work_detail, created_at))
+            report_id = cursor.lastrowid
 
-    return render_template(
-        'daily_report_input.html',
-        username=username,
-        date=selected_date  # ★テンプレートに渡す
-    )
+        # 🔹 各タスクを report_tasks に登録
+        for index, (name, duration, note) in enumerate(zip(task_name, task_duration, task_note), start=1):
+            if name.strip() == "":
+                continue
+            cursor.execute('''
+                INSERT INTO report_tasks (report_id, task_name, task_duration, task_note, task_order)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (report_id, name, duration, note, index))
+
+        db.commit()
+        flash('日報を保存しました。')
+        return redirect(url_for('daily_report_input', date=report_date))
+
+    else:
+        # GETメソッド時：フォーム初期表示処理
+        report_date = request.args.get('date')  # カレンダーから渡される日付
+        if not report_date:
+            flash('日付が指定されていません。')
+            return redirect(url_for('main'))
+
+        user_id = session.get('user_id')
+        db = get_db()
+        cursor = db.cursor()
+
+        # 既存の日報情報の取得（あれば）
+        cursor.execute('SELECT * FROM reports WHERE user_id = ? AND report_date = ?', (user_id, report_date))
+        report = cursor.fetchone()
+
+        tasks = []
+        if report:
+            cursor.execute('SELECT * FROM report_tasks WHERE report_id = ? ORDER BY task_order', (report['report_id'],))
+            tasks = cursor.fetchall()
+
+        task_count = len(tasks) if tasks else 1
+        return render_template('daily_report_input.html', report_date=report_date, report=report, tasks=tasks, task_count=task_count)
+
 
 # -----------------------
 # G5. 日報一覧画面のルート
@@ -217,6 +260,82 @@ def daily_report_input():
 # -----------------------
 # G5. 日報一覧画面のルート
 # -----------------------
+# @app.route('/report_list')
+# def report_list():
+#     if 'username' not in session:
+#         return redirect(url_for('login'))
+
+#     user_id = request.args.get('user_id')
+#     role = session.get('role')
+#     username = session['username']
+
+#     conn = get_db()
+#     cursor = conn.cursor()
+
+#     if role == 'staff' and user_id:
+#         # 職員が指定利用者の日報を閲覧
+#         cursor.execute('''
+#             SELECT reports.*, users.username 
+#             FROM reports
+#             JOIN users ON reports.user_id = users.user_id
+#             WHERE users.user_id = ?
+#             ORDER BY reports.report_date DESC
+#         ''', (user_id,))
+#     else:
+#         # 自分の日報を閲覧（利用者）
+#         cursor.execute('''
+#             SELECT reports.*, users.username 
+#             FROM reports
+#             JOIN users ON reports.user_id = users.user_id
+#             WHERE users.username = ?
+#             ORDER BY reports.report_date DESC
+#         ''', (username,))
+
+#     reports = cursor.fetchall()
+#     conn.close()
+#     return render_template('report_list.html', reports=reports, username=username)
+
+# -----------------------
+# G5. 日報一覧画面のルート
+# -----------------------
+# @app.route('/report_list')
+# def report_list():
+#     if 'username' not in session:
+#         return redirect(url_for('login'))
+
+#     user_id = request.args.get('user_id')
+#     role = session.get('role')
+#     username = session['username']
+
+#     conn = get_db()
+#     cursor = conn.cursor()
+
+#     if role == 'staff' and user_id:
+#         # 職員が指定利用者の日報を閲覧
+#         cursor.execute('''
+#             SELECT reports.*, users.username 
+#             FROM reports
+#             JOIN users ON reports.user_id = users.user_id
+#             WHERE users.user_id = ?
+#             ORDER BY reports.report_date DESC
+#         ''', (user_id,))
+#     else:
+#         # 自分の日報を閲覧（利用者）
+#         cursor.execute('''
+#             SELECT reports.*, users.username 
+#             FROM reports
+#             JOIN users ON reports.user_id = users.user_id
+#             WHERE users.username = ?
+#             ORDER BY reports.report_date DESC
+#         ''', (username,))
+
+#     reports = cursor.fetchall()
+#     conn.close()
+#     return render_template('report_list.html', reports=reports, username=username)
+
+# -----------------------
+# G5. 日報一覧画面のルート
+# -----------------------
 @app.route('/report_list')
 def report_list():
     if 'username' not in session:
@@ -226,31 +345,122 @@ def report_list():
     role = session.get('role')
     username = session['username']
 
+    print(f'DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
+
+    # 年月の指定（なければ現在）
+    year = request.args.get('year', type=int)
+    month = request.args.get('month', type=int)
+    today = datetime.today()
+
+    if not year or not month:
+        year = today.year
+        month = today.month
+
+    # 月の開始と終了を取得
+    first_day = datetime(year, month, 1)
+    last_day = datetime(year, month, calendar.monthrange(year, month)[1])
+
+    # SQLiteに渡すために文字列へ変換
+    first_day_str = first_day.strftime('%Y-%m-%d')
+    last_day_str = last_day.strftime('%Y-%m-%d')
+
+    print(f'DEBUG: first_day={first_day_str}, last_day={last_day_str}')
+    
+    # 前月・翌月
+    prev_month = first_day - timedelta(days=1)
+    next_month = last_day + timedelta(days=1)
+
     conn = get_db()
     cursor = conn.cursor()
 
     if role == 'staff' and user_id:
-        # 職員が指定利用者の日報を閲覧
         cursor.execute('''
-            SELECT reports.*, users.username 
-            FROM reports
-            JOIN users ON reports.user_id = users.user_id
-            WHERE users.user_id = ?
-            ORDER BY reports.report_date DESC
-        ''', (user_id,))
+            SELECT r.*, u.username,
+                   group_concat(t.task_duration, '\n') as task_duration,
+                   group_concat(t.task_name, '\n') as task_name,
+                   group_concat(t.task_note, '\n') as task_note
+            FROM reports r
+            JOIN users u ON r.user_id = u.user_id
+            LEFT JOIN report_tasks t ON r.report_id = t.report_id
+            WHERE r.user_id = ? AND r.report_date BETWEEN ? AND ?
+            GROUP BY r.report_id
+            ORDER BY r.report_date DESC
+        ''', (user_id, first_day_str, last_day_str))
+        username_result = cursor.execute("SELECT username FROM users WHERE user_id = ?", (user_id,)).fetchone()
+        display_username = username_result['username'] if username_result else '不明'
     else:
-        # 自分の日報を閲覧（利用者）
         cursor.execute('''
-            SELECT reports.*, users.username 
-            FROM reports
-            JOIN users ON reports.user_id = users.user_id
-            WHERE users.username = ?
-            ORDER BY reports.report_date DESC
-        ''', (username,))
+            SELECT r.*, u.username,
+                   group_concat(t.task_duration, '\n') as task_duration,
+                   group_concat(t.task_name, '\n') as task_name,
+                   group_concat(t.task_note, '\n') as task_note
+            FROM reports r
+            JOIN users u ON r.user_id = u.user_id
+            LEFT JOIN report_tasks t ON r.report_id = t.report_id
+            WHERE u.username = ? AND r.report_date BETWEEN ? AND ?
+            GROUP BY r.report_id
+            ORDER BY r.report_date DESC
+        ''', (username, first_day_str, last_day_str))
+        display_username = username
 
     reports = cursor.fetchall()
     conn.close()
-    return render_template('report_list.html', reports=reports, username=username)
+
+    return render_template('report_list.html',
+                           reports=reports,
+                           username=display_username,
+                           user_id=user_id,
+                           display_month=f"{year}年{month:02d}月",
+                           year=year,
+                           month=month,
+                           prev_year=prev_month.year,
+                           prev_month=prev_month.month,
+                           next_year=next_month.year,
+                           next_month=next_month.month)
+
+# -----------------------
+# 職員コメントアップデートの関数
+# -----------------------
+@app.route('/update_staff_comments', methods=['POST'])
+def update_staff_comments():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    report_ids_str = request.form.get('report_ids')
+    if not report_ids_str:
+        flash('更新対象のレポートIDがありません。')
+        # user_idやyear, monthを取得して渡す（なければNoneでOK）
+        user_id = request.form.get('user_id')
+        year = request.form.get('year')
+        month = request.form.get('month')
+        return redirect(url_for('report_list', user_id=user_id, year=year, month=month))
+
+    report_ids = report_ids_str.split(',')
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        for report_id in report_ids:
+            staff_comment = request.form.get(f'staff_comment_{report_id}', '')
+            cursor.execute('''
+                UPDATE reports
+                SET staff_comment = ?
+                WHERE report_id = ?
+            ''', (staff_comment, report_id))
+        conn.commit()
+        flash('職員コメントを更新しました。')
+    except Exception as e:
+        conn.rollback()
+        flash(f'コメントの更新に失敗しました。エラー: {e}')
+    finally:
+        conn.close()
+
+    # 更新後は元の利用者IDと年月を渡してリダイレクト
+    user_id = request.form.get('user_id')
+    year = request.form.get('year')
+    month = request.form.get('month')
+    return redirect(url_for('report_list', user_id=user_id, year=year, month=month))
 
 # ---------------------------
 # G6.ログアウト処理（ログアウト画面へ遷移）

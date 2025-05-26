@@ -6,3 +6,4 @@
 | task_order | INTEGER | 作業の並び順(1～3) | NOT NULL |
 | task_name | TEXT | 作業名(選択式) | NOT NULL |
 | task_duration | INTEGER | 作業時間(時間単位) | NOT NULL |
+| task_note | TEXT | 利用者コメント | |

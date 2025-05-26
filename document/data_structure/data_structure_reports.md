@@ -9,7 +9,7 @@
 | end_time | TIME | 退勤時間 | NOT NULL |
 | work_time | INTEGER | 作業時間（時間単位） | NOT NULL |
 | work_detail | TEXT | 作業内容（選択式） | NOT NULL |
-| user_comment | TEXT | 利用者の自由コメント欄 | NOT NULL |
-| staff_comment | TEXT | 職員によるコメント | NOT NULL |
+| user_comment | TEXT | 利用者の自由コメント欄 | |
+| staff_comment | TEXT | 職員によるコメント | |
 | created_at | DATETIME | 登録日時 | DEFAULT CURRENT_TIMESTAMP |
 | updated_at | DATETIME | 最終更新日時 | DEFAULT CURRENT_TIMESTAMP |

@@ -1,35 +1,105 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
-    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
     <title>業務日報一覧</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* 複数行をtextarea以外でも改行表示させる例 */
+        .multiline {
+            white-space: pre-line;
+        }
+        /* ボタンのマージン調整 */
+        .nav-buttons form {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>業務日報一覧ページ（仮）</h1>
-    <p>このページは後で正式に作成される予定です。</p>
+    <h1>{{ display_month }} の業務日報一覧</h1>
+    <p>利用者: {{ username }}</p>
 
-    <table>
-        <tr>
-            <th>日付</th>
-            <th>業務区分</th>
-            <th>開始</th>
-            <th>終了</th>
-            <th>内容</th>
-        </tr>
-        {% for report in reports %}
-        <tr>
-            <td>{{ report['report_date'] }}</td>
-            <td>{{ report['work_detail'] }}</td>
-            <td>{{ report['start_time'] }}</td>
-            <td>{{ report['end_time'] }}</td>
-            <td>{{ report['user_comment'] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <!-- フラッシュメッセージ表示 -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul style="color: green;">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="nav-buttons">
+        <!-- 前の月ボタン -->
+        <form method="get" action="{{ url_for('report_list') }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="year" value="{{ prev_year }}">
+            <input type="hidden" name="month" value="{{ prev_month }}">
+            <button type="submit">&#8592; 前の月</button>
+        </form>
+
+        <!-- 次の月ボタン -->
+        <form method="get" action="{{ url_for('report_list') }}">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="year" value="{{ next_year }}">
+            <input type="hidden" name="month" value="{{ next_month }}">
+            <button type="submit">次の月 &#8594;</button>
+        </form>
+
+        <!-- メインへ戻るボタン -->
+        <form method="get" action="{{ url_for('main') }}">
+            <button type="submit">メインへ戻る</button>
+        </form>
+
+        <!-- ログアウトボタン -->
+        <form method="get" action="{{ url_for('logout') }}">
+            <button type="submit">ログアウト</button>
+        </form>
+    </div>
+
+    <p style="margin: 10px 0;">{{ display_month }}</p>
+
+    <form method="post" action="{{ url_for('update_staff_comments') }}">
+        <input type="hidden" name="report_ids" value="{{ reports | map(attribute='report_id') | join(',') }}">
+        <input type="hidden" name="user_id" value="{{ user_id }}">
+        <input type="hidden" name="year" value="{{ year }}">
+        <input type="hidden" name="month" value="{{ month }}">
+
+        <table border="1" style="border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>出勤時間</th>
+                    <th>退勤時間</th>
+                    <th>体調</th>
+                    <th>作業時間</th>
+                    <th>作業内容</th>
+                    <th>利用者コメント</th>
+                    <th>職員コメント</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report['report_date'] }}</td>
+                    <td>{{ report['start_time'] }}</td>
+                    <td>{{ report['end_time'] }}</td>
+                    <td>{{ report['condition'] }}</td>
+                    <td class="multiline">{{ report['task_duration'] | replace('\n', '<br>') | safe }}</td>
+                    <td class="multiline">{{ report['task_name'] | replace('\n', '<br>') | safe }}</td>
+                    <td class="multiline">{{ report['task_note'] | replace('\n', '<br>') | safe }}</td>
+                    <td>
+                        <textarea name="staff_comment_{{ report['report_id'] }}" rows="3" style="width: 100%;">{{ report['staff_comment'] or '' }}</textarea>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" style="margin-top: 10px;">職員コメントを保存</button>
+    </form>
 
 </body>
-
 </html>
