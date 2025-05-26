@@ -3,35 +3,115 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"> -->
     <title>日報入力画面</title>
+
+    <style>
+        .task-block {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <script>
+        let taskCount = 1;
+
+        function addTask() {
+            if (taskCount >= 3) return;
+            taskCount++;
+            const taskTemplate = document.getElementById("task-template");
+            const clone = taskTemplate.cloneNode(true);
+            clone.removeAttribute("id");
+            clone.style.display = "block";
+
+            // 削除ボタン表示
+            const deleteBtn = clone.querySelector(".delete-btn");
+            deleteBtn.style.display = "inline";
+            deleteBtn.onclick = function () {
+                clone.remove();
+                taskCount--;
+                updateAddButton();
+            };
+
+            document.getElementById("tasks-container").appendChild(clone);
+            updateAddButton();
+        }
+
+        function updateAddButton() {
+            document.getElementById("add-btn").style.display = taskCount < 3 ? "inline" : "none";
+        }
+
+        function clearForm() {
+            document.querySelector("form").reset();
+            const container = document.getElementById("tasks-container");
+            while (container.children.length > 1) {
+                container.removeChild(container.lastChild);
+            }
+            taskCount = 1;
+            updateAddButton();
+        }
+    </script>
+
 </head>
 
 <body>
 
     <h1>{{ date }} の日報入力</h1>
 
-        <form method="POST">
-            <label>日付:</label>
-            <input type="date" name="date" required value="{{ date }}">
-    
-            <label>業務種別:</label>
-            <select name="work_type">
-                <option value="業務A">業務A</option>
-                <option value="業務B">業務B</option>
-            </select>
+    <form method="POST">
+        <label>日付:</label>
+        <input type="text" name="report_date" value="{{ date }}" readonly>
 
-            <label>開始時間:</label>
-            <input type="time" name="start_time" required>
+        <label>体調:</label>
+        <select name="condition">
+            <option value="良好">良好</option>
+            <option value="普通">普通</option>
+            <option value="悪い">悪い</option>
+        </select>
 
-            <label>終了時間:</label>
-            <input type="time" name="end_time" required>
+        <label>出勤時間:</label>
+        <input type="time" name="start_time" required>
 
-            <label>作業内容:</label>
-            <textarea name="content"></textarea>
+        <label>退勤時間:</label>
+        <input type="time" name="end_time" required>
 
-            <button type="submit">登録</button>
-        </form>
+        <hr>
+        <div id="tasks-container">
+            <div class="task-block" id="task-template">
+                <label>作業内容:</label>
+                <select name="work_detail">
+                    <option value="清掃">清掃</option>
+                    <option value="パソコン設定">パソコン設定</option>
+                    <option value="発送準備・検品">発送準備・検品</option>
+                    <option value="データ入力">データ入力</option>
+                    <option value="資料準備・確認">資料準備・確認</option>
+                    <option value="備品移動">備品移動</option>
+                    <option value="パソコンスキル">パソコンスキル</option>
+                    <option value="タイピング">タイピング</option>
+                    <option value="軽作業">軽作業</option>
+                    <option value="面接対策">面接対策</option>
+                    <option value="応募書類作成">応募書類作成</option>
+                    <option value="その他">その他</option>
+                </select>
+
+                <label>作業時間(0.25単位):</label>
+                <input type="number" name="work_time" step="0.25" min="0" required>
+
+                <label>利用者によるコメント:</label>
+                <textarea name="user_detail" maxlength="300"></textarea>
+
+                <button type="button" class="delete-btn" style="display:none">削除</button>
+            </div>
+        </div>
+
+        <button type="button" id="add-btn" onclick="addTask()">追加</button>
+
+        <div style="margin-top: 20px;">
+            <button type="submit">保存</button>
+            <button type="button" onclick="clearForm()">クリア</button>
+            <button type="button" onclick="window.location.href='{{ url_for('main') }}'">メインへ戻る</button>
+        </div>
+    </form>
 
 </body>
 
