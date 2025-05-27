@@ -353,7 +353,7 @@ def report_list():
                            next_month=next_month.month,)
 
 # -----------------------
-# 職員コメントアップデートの関数
+# 職員コメントアップデート処理
 # -----------------------
 @app.route('/update_staff_comments', methods=['POST'])
 def update_staff_comments():

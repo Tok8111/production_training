@@ -65,6 +65,20 @@
 
         window.onload = function () {
             updateButtons();
+        
+            /* ★ 出退勤時間バリデーション（クライアント側）★ */
+            const form = document.querySelector("form");
+            if (form) {
+                form.addEventListener("submit", function (e) {
+                    const s = document.getElementById("start_time").value;
+                    const t = document.getElementById("end_time").value;
+                    if (s && t && t <= s) {
+                        alert("退勤時間は出勤時間より後の時刻を入力してください。");
+                        e.preventDefault();       // 送信キャンセル
+                    }
+                });
+            }        
+
         };
 
     </script>
