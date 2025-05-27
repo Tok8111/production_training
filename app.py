@@ -1,7 +1,12 @@
 import sqlite3
 import calendar
+import os
+import logging
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from datetime import datetime, timedelta
+
+logging.basicConfig(level=logging.DEBUG)  # ログレベルをDEBUGに設定
+logger = logging.getLogger(__name__)      # ロガーを取得
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -11,12 +16,33 @@ DATABASE = 'your_database.db'  # SQLiteのDBファイル
 # ---------------------------
 # DB接続管理
 # ---------------------------
+# def get_db():
+#     db = getattr(g, '_database', None)
+#     if db is None:
+#         db = g._database = sqlite3.connect('your_database.db')
+#         db.row_factory = sqlite3.Row
+#     return db
+
+# def get_db():
+#     db = getattr(g, '_database', None)
+#     if db is None:
+#         base_dir = os.path.dirname(os.path.abspath(__file__))
+#         db_path = os.path.join(base_dir, 'your_database.db')  # 実際のDB名に変更
+#         db = g._database = sqlite3.connect(db_path)
+#         db.row_factory = sqlite3.Row
+#     return db
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect('your_database.db')
+        # Flask 実行ファイルと同じ場所にある DB ファイルの絶対パスを取得
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(base_dir, 'your_database.db')  # ← ここは正しい DB ファイル名
+        print(f"★DB接続パス = {db_path}")  # ここで確認ログを出す
+        db = g._database = sqlite3.connect(db_path)
         db.row_factory = sqlite3.Row
     return db
+
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -229,123 +255,20 @@ def daily_report_input():
         task_count = len(tasks) if tasks else 1
         return render_template('daily_report_input.html', report_date=report_date, report=report, tasks=tasks, task_count=task_count)
 
-
 # -----------------------
 # G5. 日報一覧画面のルート
 # -----------------------
-# @app.route('/report_list', methods=['GET', 'POST'])
-# def report_list():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
-
-#     username = session['username']
-#     conn = get_db()
-#     cursor = conn.cursor()
-
-#     cursor.execute('''
-#         SELECT reports.*, users.username 
-#         FROM reports
-#         JOIN users ON reports.user_id = users.user_id
-#         WHERE users.username = ?
-#         ORDER BY reports.report_date DESC
-#     ''', (username,))
-
-#     # cursor.execute('SELECT * FROM reports WHERE username = ? ORDER BY date DESC', (username,))
-
-#     reports = cursor.fetchall()
-#     conn.close()
-#     return render_template('report_list.html', reports=reports, username=username)
-
-
-# -----------------------
-# G5. 日報一覧画面のルート
-# -----------------------
-# @app.route('/report_list')
-# def report_list():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
-
-#     user_id = request.args.get('user_id')
-#     role = session.get('role')
-#     username = session['username']
-
-#     conn = get_db()
-#     cursor = conn.cursor()
-
-#     if role == 'staff' and user_id:
-#         # 職員が指定利用者の日報を閲覧
-#         cursor.execute('''
-#             SELECT reports.*, users.username 
-#             FROM reports
-#             JOIN users ON reports.user_id = users.user_id
-#             WHERE users.user_id = ?
-#             ORDER BY reports.report_date DESC
-#         ''', (user_id,))
-#     else:
-#         # 自分の日報を閲覧（利用者）
-#         cursor.execute('''
-#             SELECT reports.*, users.username 
-#             FROM reports
-#             JOIN users ON reports.user_id = users.user_id
-#             WHERE users.username = ?
-#             ORDER BY reports.report_date DESC
-#         ''', (username,))
-
-#     reports = cursor.fetchall()
-#     conn.close()
-#     return render_template('report_list.html', reports=reports, username=username)
-
-# -----------------------
-# G5. 日報一覧画面のルート
-# -----------------------
-# @app.route('/report_list')
-# def report_list():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
-
-#     user_id = request.args.get('user_id')
-#     role = session.get('role')
-#     username = session['username']
-
-#     conn = get_db()
-#     cursor = conn.cursor()
-
-#     if role == 'staff' and user_id:
-#         # 職員が指定利用者の日報を閲覧
-#         cursor.execute('''
-#             SELECT reports.*, users.username 
-#             FROM reports
-#             JOIN users ON reports.user_id = users.user_id
-#             WHERE users.user_id = ?
-#             ORDER BY reports.report_date DESC
-#         ''', (user_id,))
-#     else:
-#         # 自分の日報を閲覧（利用者）
-#         cursor.execute('''
-#             SELECT reports.*, users.username 
-#             FROM reports
-#             JOIN users ON reports.user_id = users.user_id
-#             WHERE users.username = ?
-#             ORDER BY reports.report_date DESC
-#         ''', (username,))
-
-#     reports = cursor.fetchall()
-#     conn.close()
-#     return render_template('report_list.html', reports=reports, username=username)
-
-# -----------------------
-# G5. 日報一覧画面のルート
-# -----------------------
-@app.route('/report_list')
+@app.route('/report_list', methods=['GET', 'POST'])
 def report_list():
     if 'username' not in session:
         return redirect(url_for('login'))
 
     user_id = request.args.get('user_id')
+    if user_id is not None:
+        user_id = int(user_id)
     role = session.get('role')
     username = session['username']
 
-    print(f'DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
 
     # 年月の指定（なければ現在）
     year = request.args.get('year', type=int)
@@ -364,8 +287,9 @@ def report_list():
     first_day_str = first_day.strftime('%Y-%m-%d')
     last_day_str = last_day.strftime('%Y-%m-%d')
 
-    print(f'DEBUG: first_day={first_day_str}, last_day={last_day_str}')
-    
+    logger.debug(f"first_day_str = {repr(first_day_str)}")
+    logger.debug(f"last_day_str = {repr(last_day_str)}")
+
     # 前月・翌月
     prev_month = first_day - timedelta(days=1)
     next_month = last_day + timedelta(days=1)
@@ -374,6 +298,10 @@ def report_list():
     cursor = conn.cursor()
 
     if role == 'staff' and user_id:
+        cursor.execute('SELECT report_id, report_date, typeof(report_date) FROM reports')
+        for row in cursor.fetchall():
+            print(f"report_id={row['report_id']}, report_date={row['report_date']}, type={row['typeof(report_date)']}")
+
         cursor.execute('''
             SELECT r.*, u.username,
                    group_concat(t.task_duration, '\n') as task_duration,
@@ -384,10 +312,20 @@ def report_list():
             LEFT JOIN report_tasks t ON r.report_id = t.report_id
             WHERE r.user_id = ? AND r.report_date BETWEEN ? AND ?
             GROUP BY r.report_id
-            ORDER BY r.report_date DESC
+            ORDER BY r.report_date ASC
         ''', (user_id, first_day_str, last_day_str))
+
+        reports = cursor.fetchall()
+
         username_result = cursor.execute("SELECT username FROM users WHERE user_id = ?", (user_id,)).fetchone()
         display_username = username_result['username'] if username_result else '不明'
+
+        # ログ確認
+        # print(f'1DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
+        # print(f'1DEBUG: first_day={first_day_str}, last_day={last_day_str}')
+        # print(f"1DEBUG: role={role}, user_id={user_id}, type(user_id)={type(user_id)}, username={username}")
+        # print(f"DEBUG: クエリ結果件数 = {len(reports)}")
+    
     else:
         cursor.execute('''
             SELECT r.*, u.username,
@@ -399,11 +337,19 @@ def report_list():
             LEFT JOIN report_tasks t ON r.report_id = t.report_id
             WHERE u.username = ? AND r.report_date BETWEEN ? AND ?
             GROUP BY r.report_id
-            ORDER BY r.report_date DESC
+            ORDER BY r.report_date ASC
         ''', (username, first_day_str, last_day_str))
+
+        reports = cursor.fetchall()
+
         display_username = username
 
-    reports = cursor.fetchall()
+        # ログ確認
+        # print(f'2DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
+        # print(f'2DEBUG: first_day={first_day_str}, last_day={last_day_str}')
+        # print(f"2DEBUG: role={role}, user_id={user_id}, username={username}")
+        # print(f"DEBUG: クエリ結果件数 = {len(reports)}")
+
     conn.close()
 
     return render_template('report_list.html',
@@ -416,7 +362,7 @@ def report_list():
                            prev_year=prev_month.year,
                            prev_month=prev_month.month,
                            next_year=next_month.year,
-                           next_month=next_month.month)
+                           next_month=next_month.month,)
 
 # -----------------------
 # 職員コメントアップデートの関数
