@@ -41,6 +41,7 @@
 
 ## 📂 ディレクトリ構成
 
+```plaintext
 production_training/
 ├── app.py                         Flask アプリ本体
 │
@@ -65,6 +66,7 @@ production_training/
 │   └── wire_frame                 ワイヤーフレーム
 │
 └── README.md                      プロジェクトの説明
+```
 
 ## 🗓 開発スケジュール（抜粋）
 
