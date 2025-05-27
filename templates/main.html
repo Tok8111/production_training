@@ -3,49 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>メイン画面</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 40px;
-        }
-        h2 {
-            margin-bottom: 30px;
-        }
-        table {
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #aaa;
-            width: 40px;
-            height: 40px;
-            text-align: center;
-        }
-        a {
-            text-decoration: none;
-            color: #333;
-        }
-        a:hover {
-            color: #007bff;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <h2>{{ name }}さん、こんにちは。</h2>
+    <div class="container">
+        <h1 class="app-title">業務日報アプリ</h1>
+        <h2 class="title">{{ name }}さん、こんにちは。</h2>
 
-    {% if role == 'user' %}
-        <h3>業務日報入力</h3>
-        <p>日報を入力するには、カレンダーの日付をクリックしてください。</p>
-        <!-- カレンダー表示 -->
-        <div>
-            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                <a href="{{ url_for('main') }}?year={{ prev_year }}&month={{ prev_month }}" style="margin-right:20px;">&#8592;</a>
+        {% if role == 'user' %}
+            <h3 class="subtitle">業務日報入力</h3>
+            <p class="description">日報を入力するには、カレンダーの日付をクリックしてください。</p>
+
+            <div class="calendar-nav">
+                <a href="{{ url_for('main') }}?year={{ prev_year }}&month={{ prev_month }}" class="calendar-arrow">&#8592;</a>
                 <h3>{{ year }}年 {{ month }}月</h3>
-                <a href="{{ url_for('main') }}?year={{ next_year }}&month={{ next_month }}" style="margin-left:20px;">&#8594;</a>
+                <a href="{{ url_for('main') }}?year={{ next_year }}&month={{ next_month }}" class="calendar-arrow">&#8594;</a>
             </div>
 
-            <table border="1" style="border-collapse: collapse; margin: auto;">
+            <table class="calendar-table">
                 <thead>
                     <tr>
                         <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
@@ -55,7 +31,7 @@
                     {% for week in calendar %}
                     <tr>
                         {% for day in week %}
-                        <td style="width:40px; height:40px; text-align:center; vertical-align:middle;">
+                        <td>
                             {% if day != 0 %}
                                 <a href="{{ url_for('daily_report_input') }}?date={{ year }}-{{ '%02d' % month }}-{{ '%02d' % day }}">{{ day }}</a>
                             {% else %}
@@ -67,44 +43,33 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
 
-    {% elif role == 'staff' %}
-        <h3>利用者一覧</h3>
-        <p>利用者の名前をクリックすると、その利用者の日報一覧が表示されます。</p>
-        <!-- 利用者一覧表示 -->
-        <table border="1" style="border-collapse: collapse; margin-top: 10px; width: 100%;">
-            <thead>
-                <tr>
-                    <th>名前</th>
-                </tr>
-            </thead>
+        {% elif role == 'staff' %}
+            <h3 class="subtitle">利用者一覧</h3>
+            <p class="description">利用者の名前をクリックすると、その利用者の日報一覧が表示されます。</p>
 
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>
-                        <a href="{{ url_for('report_list') }}?user_id={{ user.id }}">{{ user.name }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>名前</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><a href="{{ url_for('report_list') }}?user_id={{ user.id }}">{{ user.name }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        </table>
-  
-    {% else %}
-        <p>権限情報が見つかりません。</p>
-        
-    {% endif %}
+        {% else %}
+            <p class="error">権限情報が見つかりません。</p>
+        {% endif %}
 
-
-    <div class="button-container"></div>
-        
         <form action="{{ url_for('logout') }}">
             <button class="nav-button">ログアウト</button>
         </form>
-
     </div>
-
 </body>
 </html>

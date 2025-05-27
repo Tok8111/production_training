@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <title>日報入力画面</title>
-
-    <style>
-        .task-block {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
     <script>
         function countTasks() {
@@ -43,13 +35,11 @@
             const tasks = document.querySelectorAll("#tasks-container .task-block");
             const addBtn = document.getElementById("add-btn");
 
-            // 削除ボタンの表示制御
             tasks.forEach((task, index) => {
                 const delBtn = task.querySelector(".delete-btn");
                 delBtn.style.display = tasks.length > 1 ? "inline" : "none";
             });
 
-            // 追加ボタンの表示制御
             addBtn.style.display = tasks.length < 3 ? "inline" : "none";
         }
 
@@ -59,14 +49,12 @@
             const container = document.getElementById("tasks-container");
             container.innerHTML = "";
 
-            // 初期1件追加
             addTask();
         }
 
         window.onload = function () {
             updateButtons();
-        
-            /* ★ 出退勤時間バリデーション（クライアント側）★ */
+
             const form = document.querySelector("form");
             if (form) {
                 form.addEventListener("submit", function (e) {
@@ -74,19 +62,15 @@
                     const t = document.getElementById("end_time").value;
                     if (s && t && t <= s) {
                         alert("退勤時間は出勤時間より後の時刻を入力してください。");
-                        e.preventDefault();       // 送信キャンセル
+                        e.preventDefault();
                     }
                 });
-            }        
-
+            }
         };
-
     </script>
-
 </head>
 
 <body>
-
     <h2>{{ name }}さん：{{ report_date }}の日報入力</h2>
 
     {% with messages = get_flashed_messages() %}
@@ -124,18 +108,9 @@
                     <div class="task-block">
                         <label>作業内容:</label>
                         <select name="work_detail[]">
-                            <option value="清掃" {% if task.task_name == '清掃' %}selected{% endif %}>清掃</option>
-                            <option value="パソコン設定" {% if task.task_name == 'パソコン設定' %}selected{% endif %}>パソコン設定</option>
-                            <option value="発送準備・検品" {% if task.task_name == '発送準備・検品' %}selected{% endif %}>発送準備・検品</option>
-                            <option value="データ入力" {% if task.task_name == 'データ入力' %}selected{% endif %}>データ入力</option>
-                            <option value="資料準備・確認" {% if task.task_name == '資料準備・確認' %}selected{% endif %}>資料準備・確認</option>
-                            <option value="備品移動" {% if task.task_name == '備品移動' %}selected{% endif %}>備品移動</option>
-                            <option value="パソコンスキル" {% if task.task_name == 'パソコンスキル' %}selected{% endif %}>パソコンスキル</option>
-                            <option value="タイピング" {% if task.task_name == 'タイピング' %}selected{% endif %}>タイピング</option>
-                            <option value="軽作業" {% if task.task_name == '軽作業' %}selected{% endif %}>軽作業</option>
-                            <option value="面接対策" {% if task.task_name == '面接対策' %}selected{% endif %}>面接対策</option>
-                            <option value="応募書類作成" {% if task.task_name == '応募書類作成' %}selected{% endif %}>応募書類作成</option>
-                            <option value="その他" {% if task.task_name == 'その他' %}selected{% endif %}>その他</option>
+                            {% for option in ["清掃", "パソコン設定", "発送準備・検品", "データ入力", "資料準備・確認", "備品移動", "パソコンスキル", "タイピング", "軽作業", "面接対策", "応募書類作成", "その他"] %}
+                                <option value="{{ option }}" {% if task.task_name == option %}selected{% endif %}>{{ option }}</option>
+                            {% endfor %}
                         </select>
 
                         <label>
@@ -154,22 +129,12 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <!-- 初期表示1件 -->
                 <div class="task-block">
                     <label>作業内容:</label>
                     <select name="work_detail[]">
-                        <option value="清掃">清掃</option>
-                        <option value="パソコン設定">パソコン設定</option>
-                        <option value="発送準備・検品">発送準備・検品</option>
-                        <option value="データ入力">データ入力</option>
-                        <option value="資料準備・確認">資料準備・確認</option>
-                        <option value="備品移動">備品移動</option>
-                        <option value="パソコンスキル">パソコンスキル</option>
-                        <option value="タイピング">タイピング</option>
-                        <option value="軽作業">軽作業</option>
-                        <option value="面接対策">面接対策</option>
-                        <option value="応募書類作成">応募書類作成</option>
-                        <option value="その他">その他</option>
+                        {% for option in ["清掃", "パソコン設定", "発送準備・検品", "データ入力", "資料準備・確認", "備品移動", "パソコンスキル", "タイピング", "軽作業", "面接対策", "応募書類作成", "その他"] %}
+                            <option value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
                     </select>
 
                     <label>
@@ -196,29 +161,19 @@
         <label>職員からのコメント:</label>
         <textarea readonly style="width: 100%; height: 100px; background-color: #f9f9f9;">{{ staff_comment }}</textarea>
 
-        <div style="margin-top: 20px;">
+        <div class="button-group">
             <button type="submit">保存</button>
             <button type="button" onclick="window.location.href='{{ url_for('main') }}'">メインへ戻る</button>
         </div>
     </form>
 
-    <!-- 非表示のテンプレート -->
     <div id="task-template" style="display:none;">
         <div class="task-block">
             <label>作業内容:</label>
             <select name="work_detail[]">
-                <option value="清掃">清掃</option>
-                <option value="パソコン設定">パソコン設定</option>
-                <option value="発送準備・検品">発送準備・検品</option>
-                <option value="データ入力">データ入力</option>
-                <option value="資料準備・確認">資料準備・確認</option>
-                <option value="備品移動">備品移動</option>
-                <option value="パソコンスキル">パソコンスキル</option>
-                <option value="タイピング">タイピング</option>
-                <option value="軽作業">軽作業</option>
-                <option value="面接対策">面接対策</option>
-                <option value="応募書類作成">応募書類作成</option>
-                <option value="その他">その他</option>
+                {% for option in ["清掃", "パソコン設定", "発送準備・検品", "データ入力", "資料準備・確認", "備品移動", "パソコンスキル", "タイピング", "軽作業", "面接対策", "応募書類作成", "その他"] %}
+                    <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
             </select>
 
             <label>
@@ -237,5 +192,4 @@
         </div>
     </div>
 </body>
-
 </html>

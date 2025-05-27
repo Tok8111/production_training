@@ -3,20 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>ログイン</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h2>ログイン</h2>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form method="post" action="{{ url_for('login') }}">
-        <label for="username">ユーザーID：</label>
-        <input type="text" name="username" required><br><br>
+    <div class="container">
+        <h1 class="app-title">業務日報アプリ</h1>
+        <h2 class="title">ログイン</h2>
 
-        <label for="password">パスワード：</label>
-        <input type="password" name="password" required><br><br>
+        {% if error %}
+            <div class="message error">{{ error }}</div>
+        {% endif %}
 
-        <input type="submit" value="ログイン">
-    </form>
+        <form method="post" action="{{ url_for('login') }}" class="form-box">
+            <label for="username">ユーザーID：</label>
+            <input type="text" name="username" id="username" required>
+
+            <label for="password">パスワード：</label>
+            <input type="password" name="password" id="password" required>
+
+            <button type="submit" class="btn-primary">ログイン</button>
+        </form>
+    </div>
 </body>
+
 </html>

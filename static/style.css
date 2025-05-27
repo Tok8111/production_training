@@ -1,0 +1,292 @@
+/* ===== 基本設定 ===== */
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4 {
+  color: #F7931E;
+  margin-top: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* ===== フォーム ===== */
+input[type="text"], input[type="password"], input[type="time"], textarea, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #F7931E;
+  outline: none;
+  box-shadow: 0 0 5px rgba(247, 147, 30, 0.4);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ===== ボタン ===== */
+button, input[type="submit"] {
+  background-color: #F7931E;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+button:hover, input[type="submit"]:hover {
+  background-color: #e67e00;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ===== テーブル ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+th {
+  background-color: #F7931E;
+  color: white;
+}
+
+/* ===== メッセージ ===== */
+.message {
+  padding: 10px;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}
+
+.message.success {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+
+/* ===== ヘッダー・ナビ ===== */
+header {
+  background-color: #F7931E;
+  color: #fff;
+  padding: 1rem 0;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* ===== エラー警告 ===== */
+.error-title {
+    color: #d32f2f;
+}
+
+.message.error {
+    background-color: #ffcdd2;
+    color: #c62828;
+    padding: 10px;
+    border-left: 5px solid #f44336;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.btn-secondary {
+    display: inline-block;
+    background-color: #FF6F00;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #e65100;
+}
+
+/* カレンダーテーブル */
+.calendar-table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 500px;
+    background-color: white;
+}
+
+.calendar-table th, .calendar-table td {
+    border: 1px solid #ddd;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    padding: 8px;
+}
+
+.calendar-table td a {
+    display: block;
+    text-decoration: none;
+    color: #FF6F00;
+    font-weight: bold;
+}
+
+.calendar-table td a:hover {
+    background-color: #ffe0b2;
+    border-radius: 4px;
+}
+
+/* カレンダーナビゲーション */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px 0;
+}
+
+.calendar-arrow {
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: #FF6F00;
+}
+
+.calendar-arrow:hover {
+    color: #e65100;
+}
+
+/* 利用者一覧テーブル */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.user-table td a {
+    color: #FF6F00;
+    text-decoration: none;
+}
+
+.user-table td a:hover {
+    text-decoration: underline;
+}
+
+/* 日報入力画面用 */
+.task-block {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.button-group {
+    margin-top: 20px;
+}
+
+/* ===== G5: 日報一覧画面用スタイル追加 ===== */
+/* 表内の複数行改行対応 */
+.multiline {
+    white-space: pre-line;
+}
+
+/* ナビゲーションボタンの整列 */
+.nav-buttons {
+    margin-bottom: 20px;
+}
+
+.nav-buttons form {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* 日報テーブル */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white;
+}
+
+.report-table th,
+.report-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    vertical-align: top;
+}
+
+/* コメント入力欄 */
+.report-table textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+/* 保存ボタン調整 */
+.save-button {
+    margin-top: 20px;
+}
+
+/* ===== レスポンシブ対応 ===== */
+@media (max-width: 600px) {
+  .container {
+    margin: 20px;
+    padding: 1rem;
+  }
+
+  button, input[type="submit"] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
