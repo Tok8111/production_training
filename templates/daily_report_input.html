@@ -57,7 +57,7 @@
 
 <body>
 
-    <h1>{{ report_date }} の日報入力</h1>
+    <h2>{{ name }}さん：{{ report_date }}の日報入力</h2>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -80,11 +80,11 @@
             <option value="悪い" {% if condition == '悪い' %}selected{% endif %}>悪い</option>
         </select>
 
-        <label>出勤時間:</label>
-        <input type="time" name="start_time" value="{{ start_time }}" required>
+        <label for="start_time">出勤時間</label>
+        <input type="time" id="start_time" name="start_time" value="{{ report.start_time if report else '' }}">
 
-        <label>退勤時間:</label>
-        <input type="time" name="end_time" value="{{ end_time }}" required>
+        <label for="end_time">退勤時間</label>
+        <input type="time" id="end_time" name="end_time" value="{{ report.end_time if report else '' }}">
 
         <hr>
 
@@ -108,8 +108,12 @@
                             <option value="その他" {% if task.task_name == 'その他' %}selected{% endif %}>その他</option>
                         </select>
 
-                        <label>作業時間(0.25単位):</label>
-                        <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>
+                        <label for="work_time">
+                            作業時間
+                            <span class="text-sm text-gray-500">
+                                <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>(時間:0.25単位)
+                            </span>
+                        </label>
 
                         <label>利用者によるコメント:</label>
                         <textarea name="user_comment[]" maxlength="300">{{ task.task_note }}</textarea>
@@ -135,8 +139,12 @@
                         <option value="その他">その他</option>
                     </select>
 
-                    <label>作業時間(0.25単位):</label>
-                    <input type="number" name="work_time[]" step="0.25" min="0" required>
+                    <label for="work_time">
+                        作業時間
+                        <span class="text-sm text-gray-500">
+                            <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>(時間:0.25単位)
+                        </span>
+                    </label>
 
                     <label>利用者によるコメント:</label>
                     <textarea name="user_comment[]" maxlength="300"></textarea>

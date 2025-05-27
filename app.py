@@ -101,6 +101,7 @@ def login():
             session['user_id'] = user['user_id'] # ユーザIDをセッションに保存
             session['username'] = user['username']  # ユーザネームをセッションに保存
             session['role'] = user['role']  # ユーザロールをセッションに保存
+            session['name'] = user['name']  # ユーザ氏名をセッションに保存
             return redirect(url_for('main'))
         else:
             return redirect(url_for('login_failure'))
@@ -163,6 +164,7 @@ def main():
 
     return render_template('main.html',
                            username=username,
+                           name=session.get('name'),
                            role=role,
                            calendar=calendar_data,
                            year=year,
@@ -253,7 +255,16 @@ def daily_report_input():
             tasks = cursor.fetchall()
 
         task_count = len(tasks) if tasks else 1
-        return render_template('daily_report_input.html', report_date=report_date, report=report, tasks=tasks, task_count=task_count)
+        
+        # ユーザー名をセッションから取得してテンプレートに渡す
+        user_name = session.get('name', '利用者')  # セッションに名前があることを想定
+        return render_template('daily_report_input.html',
+            report_date=report_date,
+            report=report,
+            tasks=tasks,
+            task_count=task_count,
+            name=user_name
+        )
 
 # -----------------------
 # G5. 日報一覧画面のルート

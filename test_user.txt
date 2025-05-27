@@ -1,0 +1,9 @@
+        ('user01', 'pass1', '利用者 一郎', 'user', now),
+        ('user02', 'pass2', '利用者 二郎', 'user', now),
+        ('user03', 'pass3', '利用者 三郎', 'user', now),
+        ('user04', 'pass4', '利用者 四郎', 'user', now),
+        ('user05', 'pass5', '利用者 五郎', 'user', now),
+
+        # 職員 2名
+        ('staff01', 'pass01', '佐藤 太郎', 'staff', now),
+        ('staff02', 'pass02', '鈴木 次郎', 'staff', now)

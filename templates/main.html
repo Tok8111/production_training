@@ -32,10 +32,9 @@
 </head>
 
 <body>
-    <h2>{{ username }}さん、こんにちは。</h2>
+    <h2>{{ name }}さん、こんにちは。</h2>
 
     {% if role == 'user' %}
-        <p>あなたは「利用者」としてログインしています。</p>
 
         <!-- カレンダー表示 -->
         <div>
@@ -70,7 +69,6 @@
         </div>
 
     {% elif role == 'staff' %}
-        <p>あなたは「職員」としてログインしています。</p>
 
         <h3>利用者一覧</h3>
         <table border="1" style="border-collapse: collapse; margin-top: 10px; width: 100%;">
