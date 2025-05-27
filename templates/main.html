@@ -35,7 +35,8 @@
     <h2>{{ name }}さん、こんにちは。</h2>
 
     {% if role == 'user' %}
-
+        <h3>業務日報入力</h3>
+        <p>日報を入力するには、カレンダーの日付をクリックしてください。</p>
         <!-- カレンダー表示 -->
         <div>
             <div style="display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
@@ -69,8 +70,9 @@
         </div>
 
     {% elif role == 'staff' %}
-
         <h3>利用者一覧</h3>
+        <p>利用者の名前をクリックすると、その利用者の日報一覧が表示されます。</p>
+        <!-- 利用者一覧表示 -->
         <table border="1" style="border-collapse: collapse; margin-top: 10px; width: 100%;">
             <thead>
                 <tr>

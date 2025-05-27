@@ -14,43 +14,59 @@
     </style>
 
     <script>
-        // 初期値はサーバーからのtasks数。0件なら1にする。
-        let taskCount = {{ task_count }};
-
-        function addTask() {
-            if (taskCount >= 3) return;
-            taskCount++;
-            const taskTemplate = document.getElementById("task-template");
-            const clone = taskTemplate.cloneNode(true);
-            clone.removeAttribute("id");
-            clone.style.display = "block";
-
-            // 削除ボタン表示
-            const deleteBtn = clone.querySelector(".delete-btn");
-            deleteBtn.style.display = "inline";
-            deleteBtn.onclick = function () {
-                clone.remove();
-                taskCount--;
-                updateAddButton();
-            };
-
-            document.getElementById("tasks-container").appendChild(clone);
-            updateAddButton();
+        function countTasks() {
+            return document.querySelectorAll("#tasks-container .task-block").length;
         }
 
-        function updateAddButton() {
-            document.getElementById("add-btn").style.display = taskCount < 3 ? "inline" : "none";
+        function addTask() {
+            const currentCount = countTasks();
+            if (currentCount >= 3) return;
+
+            const template = document.getElementById("task-template").innerHTML;
+            const container = document.getElementById("tasks-container");
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = template;
+            container.appendChild(wrapper.firstElementChild);
+
+            updateButtons();
+        }
+
+        function deleteTask(button) {
+            const container = document.getElementById("tasks-container");
+            if (countTasks() > 1) {
+                button.closest(".task-block").remove();
+            }
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const tasks = document.querySelectorAll("#tasks-container .task-block");
+            const addBtn = document.getElementById("add-btn");
+
+            // 削除ボタンの表示制御
+            tasks.forEach((task, index) => {
+                const delBtn = task.querySelector(".delete-btn");
+                delBtn.style.display = tasks.length > 1 ? "inline" : "none";
+            });
+
+            // 追加ボタンの表示制御
+            addBtn.style.display = tasks.length < 3 ? "inline" : "none";
         }
 
         function clearForm() {
             document.querySelector("form").reset();
+
             const container = document.getElementById("tasks-container");
-            while (container.children.length > 1) {
-                container.removeChild(container.lastChild);
-            }
-            taskCount = 1;
-            updateAddButton();
+            container.innerHTML = "";
+
+            // 初期1件追加
+            addTask();
         }
+
+        window.onload = function () {
+            updateButtons();
+        };
+
     </script>
 
 </head>
@@ -81,10 +97,10 @@
         </select>
 
         <label for="start_time">出勤時間</label>
-        <input type="time" id="start_time" name="start_time" value="{{ report.start_time if report else '' }}">
+        <input type="time" id="start_time" name="start_time" value="{{ report.start_time if report else '' }}" required>
 
         <label for="end_time">退勤時間</label>
-        <input type="time" id="end_time" name="end_time" value="{{ report.end_time if report else '' }}">
+        <input type="time" id="end_time" name="end_time" value="{{ report.end_time if report else '' }}" required>
 
         <hr>
 
@@ -108,21 +124,24 @@
                             <option value="その他" {% if task.task_name == 'その他' %}selected{% endif %}>その他</option>
                         </select>
 
-                        <label for="work_time">
+                        <label>
                             作業時間
                             <span class="text-sm text-gray-500">
                                 <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>(時間:0.25単位)
                             </span>
                         </label>
 
+                        <hr>
+
                         <label>利用者によるコメント:</label>
                         <textarea name="user_comment[]" maxlength="300">{{ task.task_note }}</textarea>
 
-                        <button type="button" class="delete-btn" onclick="this.parentElement.remove()">削除</button>
+                        <button type="button" class="delete-btn" onclick="deleteTask(this)">削除</button>
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="task-block" id="task-template">
+                <!-- 初期表示1件 -->
+                <div class="task-block">
                     <label>作業内容:</label>
                     <select name="work_detail[]">
                         <option value="清掃">清掃</option>
@@ -139,30 +158,70 @@
                         <option value="その他">その他</option>
                     </select>
 
-                    <label for="work_time">
+                    <label>
                         作業時間
                         <span class="text-sm text-gray-500">
-                            <input type="number" name="work_time[]" step="0.25" min="0" value="{{ task.task_duration }}" required>(時間:0.25単位)
+                            <input type="number" name="work_time[]" step="0.25" min="0" required>(時間:0.25単位)
                         </span>
                     </label>
+
+                    <hr>
 
                     <label>利用者によるコメント:</label>
                     <textarea name="user_comment[]" maxlength="300"></textarea>
 
-                    <button type="button" class="delete-btn" style="display:none">削除</button>
+                    <button type="button" class="delete-btn" style="display:none;" onclick="deleteTask(this)">削除</button>
                 </div>
             {% endif %}
         </div>
 
         <button type="button" id="add-btn" onclick="addTask()">追加</button>
 
+        <hr>
+
+        <label>職員からのコメント:</label>
+        <textarea readonly style="width: 100%; height: 100px; background-color: #f9f9f9;">{{ staff_comment }}</textarea>
+
         <div style="margin-top: 20px;">
             <button type="submit">保存</button>
-            <button type="button" onclick="clearForm()">クリア</button>
             <button type="button" onclick="window.location.href='{{ url_for('main') }}'">メインへ戻る</button>
         </div>
     </form>
 
+    <!-- 非表示のテンプレート -->
+    <div id="task-template" style="display:none;">
+        <div class="task-block">
+            <label>作業内容:</label>
+            <select name="work_detail[]">
+                <option value="清掃">清掃</option>
+                <option value="パソコン設定">パソコン設定</option>
+                <option value="発送準備・検品">発送準備・検品</option>
+                <option value="データ入力">データ入力</option>
+                <option value="資料準備・確認">資料準備・確認</option>
+                <option value="備品移動">備品移動</option>
+                <option value="パソコンスキル">パソコンスキル</option>
+                <option value="タイピング">タイピング</option>
+                <option value="軽作業">軽作業</option>
+                <option value="面接対策">面接対策</option>
+                <option value="応募書類作成">応募書類作成</option>
+                <option value="その他">その他</option>
+            </select>
+
+            <label>
+                作業時間
+                <span class="text-sm text-gray-500">
+                    <input type="number" name="work_time[]" step="0.25" min="0" required>(時間:0.25単位)
+                </span>
+            </label>
+
+            <hr>
+
+            <label>利用者によるコメント:</label>
+            <textarea name="user_comment[]" maxlength="300"></textarea>
+
+            <button type="button" class="delete-btn" onclick="deleteTask(this)">削除</button>
+        </div>
+    </div>
 </body>
 
 </html>

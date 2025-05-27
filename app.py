@@ -238,6 +238,11 @@ def daily_report_input():
 
         task_count = len(tasks) if tasks else 1
 
+        # 職員コメントの設定
+        staff_comment = ''
+        if report:
+            staff_comment = report['staff_comment'] if report['staff_comment'] is not None else ''
+        
         # ユーザー名をセッションから取得してテンプレートに渡す
         user_name = session.get('name', '利用者')  # セッションに名前があることを想定
         return render_template('daily_report_input.html',
@@ -245,7 +250,8 @@ def daily_report_input():
             report=report,
             tasks=tasks,
             task_count=task_count,
-            name=user_name
+            name=user_name,
+            staff_comment=staff_comment
         )
 
 # -----------------------
