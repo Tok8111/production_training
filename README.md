@@ -17,17 +17,18 @@
   - ログイン
   - 日報の入力（出退勤時間、体調、作業内容、自由コメント）
   - 履歴閲覧
+  
 - 職員向け
   - ログイン
   - 利用者ごとの日報一覧表示
   - コメントの追加
 
-## 🛠 使用技術（予定）
+## 🛠 使用技術
 
 | 項目 | 使用予定技術 |
 |-|-|
-| フロントエンド | HTML / CSS / JavaScript (Bootstrap) |
-| バックエンド | Pythom (Flask) |
+| フロントエンド | HTML / CSS / JavaScript |
+| バックエンド | Python (Flask) |
 | データベース | SQLite |
 | 開発環境 | VSCode (ローカル開発) |
 | その他 | Git、レスポンシブ対応設計 |
@@ -38,9 +39,32 @@
 
 ```
 
-## 📂 ディレクトリ構成（整理中）
+## 📂 ディレクトリ構成
 
-- 
+production_training/
+├── app.py                         Flask アプリ本体
+│
+├── static/                        静的ファイル(CSS)
+│   └── style.css                  スタイルシート
+│
+├── templates/                     HTMLファイル
+│   ├── login.html                 G1.ログイン画面
+│   ├── login_failure.html         G2.ログイン失敗画面
+│   ├── main.html                  G3.メイン画面
+│   ├── daily_report_input.html    G4.日報入力画面(利用者のみ閲覧可)
+│   ├── report_list.html           G5.日報一覧画面(職員のみ閲覧可)
+│   └── logout.html                G6.ログアウト画面
+│
+├── document/                      ドキュメントファイル
+│   ├── class_diagram              クラス図
+│   ├── data_structure             データ構造
+│   ├── display_draft              画面設計ドラフト
+│   ├── er_diagram                 ER図
+│   ├── requirements               要求定義書
+│   ├── screen_transition_diagram  画面遷移図
+│   └── wire_frame                 ワイヤーフレーム
+│
+└── README.md                      プロジェクトの説明
 
 ## 🗓 開発スケジュール（抜粋）
 
@@ -57,7 +81,7 @@
 | 9日目（2025年5月28日） | （バッファ） |
 
 ## 📄 詳細資料
-- 要件定義書：document/requirements.md を参照
+- 要件定義書：document/requirements/requirements.md を参照
 
 ## 📝 ライセンス
 本プロジェクトは2025年1月～5月の職業訓練課程における教育・研修目的でのみ利用されます。
