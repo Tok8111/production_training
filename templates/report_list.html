@@ -17,8 +17,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ display_month }} の業務日報一覧</h1>
-    <p>利用者: {{ username }}</p>
+    <h1>{{ name }}さん：{{ display_month }} の業務日報一覧</h1>
 
     <!-- フラッシュメッセージ表示 -->
     {% with messages = get_flashed_messages() %}
@@ -58,8 +57,6 @@
             <button type="submit">ログアウト</button>
         </form>
     </div>
-
-    <p style="margin: 10px 0;">{{ display_month }}</p>
 
     <form method="post" action="{{ url_for('update_staff_comments') }}">
         <input type="hidden" name="report_ids" value="{{ reports | map(attribute='report_id') | join(',') }}">

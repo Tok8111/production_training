@@ -16,33 +16,15 @@ DATABASE = 'your_database.db'  # SQLiteのDBファイル
 # ---------------------------
 # DB接続管理
 # ---------------------------
-# def get_db():
-#     db = getattr(g, '_database', None)
-#     if db is None:
-#         db = g._database = sqlite3.connect('your_database.db')
-#         db.row_factory = sqlite3.Row
-#     return db
-
-# def get_db():
-#     db = getattr(g, '_database', None)
-#     if db is None:
-#         base_dir = os.path.dirname(os.path.abspath(__file__))
-#         db_path = os.path.join(base_dir, 'your_database.db')  # 実際のDB名に変更
-#         db = g._database = sqlite3.connect(db_path)
-#         db.row_factory = sqlite3.Row
-#     return db
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         # Flask 実行ファイルと同じ場所にある DB ファイルの絶対パスを取得
         base_dir = os.path.dirname(os.path.abspath(__file__))
         db_path = os.path.join(base_dir, 'your_database.db')  # ← ここは正しい DB ファイル名
-        print(f"★DB接続パス = {db_path}")  # ここで確認ログを出す
         db = g._database = sqlite3.connect(db_path)
         db.row_factory = sqlite3.Row
     return db
-
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -255,7 +237,7 @@ def daily_report_input():
             tasks = cursor.fetchall()
 
         task_count = len(tasks) if tasks else 1
-        
+
         # ユーザー名をセッションから取得してテンプレートに渡す
         user_name = session.get('name', '利用者')  # セッションに名前があることを想定
         return render_template('daily_report_input.html',
@@ -330,12 +312,6 @@ def report_list():
 
         username_result = cursor.execute("SELECT username FROM users WHERE user_id = ?", (user_id,)).fetchone()
         display_username = username_result['username'] if username_result else '不明'
-
-        # ログ確認
-        # print(f'1DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
-        # print(f'1DEBUG: first_day={first_day_str}, last_day={last_day_str}')
-        # print(f"1DEBUG: role={role}, user_id={user_id}, type(user_id)={type(user_id)}, username={username}")
-        # print(f"DEBUG: クエリ結果件数 = {len(reports)}")
     
     else:
         cursor.execute('''
@@ -355,17 +331,12 @@ def report_list():
 
         display_username = username
 
-        # ログ確認
-        # print(f'2DEBUG: report_list called with user_id={user_id}, role={role}, username={username}')
-        # print(f'2DEBUG: first_day={first_day_str}, last_day={last_day_str}')
-        # print(f"2DEBUG: role={role}, user_id={user_id}, username={username}")
-        # print(f"DEBUG: クエリ結果件数 = {len(reports)}")
-
     conn.close()
 
     return render_template('report_list.html',
                            reports=reports,
-                           username=display_username,
+                           name=display_username,
+                        #    username=display_username,
                            user_id=user_id,
                            display_month=f"{year}年{month:02d}月",
                            year=year,
