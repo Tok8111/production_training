@@ -221,8 +221,66 @@ footer {
     text-decoration: underline;
 }
 
-/* 日報入力画面用 */
+/* ===== 日報入力画面用スタイル追加 ===== */
+form {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* ===== 見出し中央揃え ===== */
+.center-heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* 入力行を中央寄せし、幅を調整 */
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.form-group {
+  flex: 1 1 200px;
+  max-width: 300px;
+}
+
+/* タスクブロックの幅も制限 */
 .task-block {
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fcfcfc;
+}
+
+/* ボタン配置 */
+.button-group {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* テキストエリアの横幅を抑える */
+textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* コメント欄も中央寄せ */
+form > label, form > textarea {
+  display: block;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---↓ */
+/* .task-block {
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
@@ -230,9 +288,35 @@ footer {
 
 .button-group {
     margin-top: 20px;
+} */
+
+/* ===== 見出し中央揃え ===== */
+/* .center-heading {
+  text-align: center;
+  margin-bottom: 2rem;
+} */
+
+/* ===== 横並び用のフォーム行 ===== */
+/* .input-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+} */
+
+/* 各入力欄をコンパクトに */
+/* .input-row .form-group {
+  flex: 1 1 22%; /* 4つ並べて全体で約88%程度に */
+  /* min-width: 150px;
 }
 
-/* ===== G5: 日報一覧画面用スタイル追加 ===== */
+.input-row .form-group input,
+.input-row .form-group select {
+  width: 100%;
+} */
+
+/* ===== 日報一覧画面用スタイル追加 ===== */
 /* 表内の複数行改行対応 */
 .multiline {
     white-space: pre-line;

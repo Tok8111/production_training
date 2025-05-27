@@ -71,7 +71,8 @@
 </head>
 
 <body>
-    <h2>{{ name }}さん：{{ report_date }}の日報入力</h2>
+    <h2 class="center-heading">{{ name }}さん</h2>
+    <h2 class="center-heading">{{ report_date }}の日報入力</h2>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -84,21 +85,33 @@
     {% endwith %}
 
     <form method="POST">
-        <label>日付:</label>
-        <input type="text" name="report_date" value="{{ report_date }}" readonly>
+        <div class="input-row">
+            <div class="form-group">
+                <label>日付:</label>
+                <input type="text" name="report_date" value="{{ report_date }}" readonly>
+            </div>
 
-        <label>体調:</label>
-        <select name="condition">
-            <option value="良好" {% if condition == '良好' %}selected{% endif %}>良好</option>
-            <option value="普通" {% if condition == '普通' %}selected{% endif %}>普通</option>
-            <option value="悪い" {% if condition == '悪い' %}selected{% endif %}>悪い</option>
-        </select>
+            <div class="form-group">
+                <label>体調:</label>
+                <select name="condition">
+                    <option value="良好" {% if condition == '良好' %}selected{% endif %}>良好</option>
+                    <option value="普通" {% if condition == '普通' %}selected{% endif %}>普通</option>
+                    <option value="悪い" {% if condition == '悪い' %}selected{% endif %}>悪い</option>
+                </select>
+            </div>
+        </div>
 
-        <label for="start_time">出勤時間</label>
-        <input type="time" id="start_time" name="start_time" value="{{ report.start_time if report else '' }}" required>
+        <div class="input-row">
+            <div class="form-group">
+                <label for="start_time">出勤時間</label>
+                <input type="time" id="start_time" name="start_time" value="{{ report.start_time if report else '' }}" required>
+            </div>
 
-        <label for="end_time">退勤時間</label>
-        <input type="time" id="end_time" name="end_time" value="{{ report.end_time if report else '' }}" required>
+            <div class="form-group">
+                <label for="end_time">退勤時間</label>
+                <input type="time" id="end_time" name="end_time" value="{{ report.end_time if report else '' }}" required>
+            </div>
+        </div>
 
         <hr>
 
@@ -154,7 +167,9 @@
             {% endif %}
         </div>
 
-        <button type="button" id="add-btn" onclick="addTask()">追加</button>
+        <div style="text-align: center;">
+            <button type="button" id="add-btn" onclick="addTask()">追加</button>
+        </div>
 
         <hr>
 
